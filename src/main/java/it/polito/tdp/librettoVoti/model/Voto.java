@@ -48,7 +48,4 @@ public class Voto {
 		return Objects.equals(corso, other.corso);
 	}
 	
-	
-	
-		
 }

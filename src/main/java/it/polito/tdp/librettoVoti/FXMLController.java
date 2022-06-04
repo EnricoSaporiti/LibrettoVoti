@@ -1,6 +1,7 @@
 package it.polito.tdp.librettoVoti;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.librettoVoti.model.Libretto;
@@ -8,6 +9,7 @@ import it.polito.tdp.librettoVoti.model.Voto;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
@@ -21,6 +23,14 @@ public class FXMLController {
 
 	public void setModel(Libretto model) {
 		this.model = model;
+		
+   		List<Voto> voti = this.model.getVoti();
+		txtVoti.clear();
+		txtVoti.appendText("hai superato " + voti.size() + " esami \n");
+		for ( Voto v : voti) {
+			txtVoti.appendText(v.toString() + "\n");
+		}
+
 	}
 
 	public void setLocation(URL location) {
@@ -44,17 +54,41 @@ public class FXMLController {
     private TextField txtNome;
 
     @FXML
+    private Label txtStatus;
+
+    @FXML
     private TextArea txtVoti;
 
+    /**
+     * @param event
+     */
     @FXML
     void handleNuovoVoto(ActionEvent event) {
     	
     	String nome = txtNome.getText();
-    	int punti = cmbPunti.getValue();
+    	Integer punti = cmbPunti.getValue();
     	
-    	model.addVoto(new Voto(nome, punti));
-    	txtVoti.setText(model.toString());
+    	if(nome.equals("") || punti == null ) {
+    		txtStatus.setText("Errore valorizzare sia voti che nome");
+    		return;
+    	}
+    	
+    	boolean ok = model.addVoto(new Voto(nome, punti));
+    	if(ok) {
+    		List<Voto> voti = model.getVoti();
+    		txtVoti.clear();
+    		txtVoti.appendText("hai superato " + voti.size() + " esami \n");
+    		for ( Voto v : voti) {
+    			txtVoti.appendText(v.toString() + "\n");
+    		}
+    		txtNome.clear();
+    		cmbPunti.setValue(null);
+    		txtStatus.setText("");
+    	} else {
+    		txtStatus.setText("Errore  esame già presente");
+    	}
 
+    	
     }
 
     @FXML
